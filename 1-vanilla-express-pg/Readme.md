@@ -25,6 +25,7 @@
 ## 🎯 Overview
 
 This is the **foundation** of our backend journey. We build everything from scratch using:
+
 - **Express.js** for routing and middleware
 - **PostgreSQL** with raw SQL queries using the `pg` library
 - **JWT** for stateless authentication
@@ -37,24 +38,29 @@ This is the **foundation** of our backend journey. We build everything from scra
 ## 🎓 What You'll Learn
 
 ### Core Concepts
+
 1. **HTTP Request/Response Cycle**
+
    - How Express handles incoming requests
    - Middleware execution order
    - Sending responses back to clients
 
 2. **Database Management**
+
    - Creating PostgreSQL connections
    - Writing raw SQL queries
    - Handling query results
    - Database connection pooling
 
 3. **Authentication Flow**
+
    - User registration process
    - Password hashing with bcrypt
    - JWT token generation
    - Token verification middleware
 
 4. **RESTful API Design**
+
    - Resource naming conventions
    - HTTP methods (GET, POST, PUT, DELETE)
    - Status codes (200, 201, 400, 401, 404, 500)
@@ -98,16 +104,19 @@ This is the **foundation** of our backend journey. We build everything from scra
 Before starting, ensure you have:
 
 1. **Node.js** (v16 or higher)
+
    ```bash
    node --version  # Should show v16.x or higher
    ```
 
 2. **npm** (comes with Node.js)
+
    ```bash
    npm --version
    ```
 
 3. **PostgreSQL** (v12 or higher)
+
    ```bash
    psql --version  # Should show 12.x or higher
    ```
@@ -121,16 +130,19 @@ Before starting, ensure you have:
 ## 📦 Installation
 
 ### Step 1: Navigate to Directory
+
 ```bash
 cd 1-vanilla-express-pg
 ```
 
 ### Step 2: Install Dependencies
+
 ```bash
 npm install
 ```
 
 **Dependencies Installed:**
+
 - `express` - Web framework
 - `pg` - PostgreSQL client
 - `bcrypt` - Password hashing
@@ -145,6 +157,7 @@ npm install
 ### Step 1: Create Database
 
 **On macOS/Linux:**
+
 ```bash
 # Access PostgreSQL
 psql postgres
@@ -157,6 +170,7 @@ CREATE DATABASE todo_app_db;
 ```
 
 **On Windows:**
+
 ```bash
 # Open Command Prompt as Administrator
 psql -U postgres
@@ -167,6 +181,20 @@ CREATE DATABASE todo_app_db;
 # Exit
 \q
 ```
+
+**If U don't want to use cmd prompt**
+
+#### step 1. open pgAdmin
+
+#### step 2. create database
+
+#### step 3. right click --> query tool
+
+#### step 4. create tables
+
+#### step 5. f5 or run query
+
+---
 
 ### Step 2: Create Tables
 
@@ -198,25 +226,37 @@ CREATE INDEX idx_todos_user_id ON todos(user_id);
 ```
 
 **Run the schema:**
+
 ```bash
 psql -d todo_app_db -f schema.sql
 ```
 
 **Verify tables created:**
+
 ```bash
 psql -d todo_app_db -c "\dt"
 ```
+
+**If using pgAdmin**
+
+##### then verify like this
+
+#### - SELECT \* FROM users;
+
+#### - SELECT \* FROM todos;
 
 ---
 
 ## 🔐 Environment Variables
 
 ### Step 1: Create .env File
+
 ```bash
 cp .env.example .env
 ```
 
 ### Step 2: Configure .env
+
 ```env
 # Server Configuration
 PORT=3000
@@ -238,25 +278,84 @@ BCRYPT_ROUNDS=10
 ```
 
 **Important Security Notes:**
+
 - ⚠️ Never commit `.env` to Git
 - ⚠️ Use strong JWT_SECRET in production
 - ⚠️ Change default passwords
 
 ---
 
+#### IMP files (server.js)
+
+```Javascript
+import express from 'express';
+import dotenv from 'dotenv';
+dotenv.config();
+import './config/database.js';
+
+const app = express();
+const PORT = process.env.PORT || 7000;
+
+app.use(express.json());
+app.get('/', (req, res) => {
+  res.json({ message: 'API is working' });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
+
+```
+
+```javascript
+import dotenv from 'dotenv';
+dotenv.config();
+import pkg from 'pg';
+
+const { Pool } = pkg;
+
+const pool = new Pool({
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+});
+
+pool
+  .connect()
+  .then((client) => {
+    console.log('Database connected successfully');
+    client.release();
+  })
+  .catch((err) => {
+    console.error('Database connection error:', err.message);
+  });
+
+export default pool;
+```
+
+```bash
+Server is running on http://localhost:8000
+Database connected successfully
+```
+
 ## 🚀 Running the Application
 
 ### Development Mode (with auto-restart)
+
 ```bash
 npm run dev
 ```
 
 ### Production Mode
+
 ```bash
 npm start
 ```
 
 **Expected Output:**
+
 ```
 Server running on port 3000
 Database connected successfully
@@ -271,9 +370,11 @@ Base URL: `http://localhost:3000/api`
 ### Authentication Endpoints
 
 #### 1. User Signup
+
 **Endpoint:** `POST /api/auth/signup`
 
 **Request Body:**
+
 ```json
 {
   "email": "user@example.com",
@@ -283,6 +384,7 @@ Base URL: `http://localhost:3000/api`
 ```
 
 **Success Response (201):**
+
 ```json
 {
   "message": "User created successfully",
@@ -296,6 +398,7 @@ Base URL: `http://localhost:3000/api`
 ```
 
 **Error Response (400):**
+
 ```json
 {
   "error": "User already exists"
@@ -305,9 +408,11 @@ Base URL: `http://localhost:3000/api`
 ---
 
 #### 2. User Login
+
 **Endpoint:** `POST /api/auth/login`
 
 **Request Body:**
+
 ```json
 {
   "email": "user@example.com",
@@ -316,6 +421,7 @@ Base URL: `http://localhost:3000/api`
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "message": "Login successful",
@@ -329,6 +435,7 @@ Base URL: `http://localhost:3000/api`
 ```
 
 **Error Response (401):**
+
 ```json
 {
   "error": "Invalid credentials"
@@ -340,14 +447,17 @@ Base URL: `http://localhost:3000/api`
 ### Todo Endpoints (Protected - Requires Authentication)
 
 **All todo endpoints require the JWT token in the Authorization header:**
+
 ```
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 #### 3. Get All Todos
+
 **Endpoint:** `GET /api/todos`
 
 **Success Response (200):**
+
 ```json
 {
   "todos": [
@@ -367,9 +477,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ---
 
 #### 4. Create Todo
+
 **Endpoint:** `POST /api/todos`
 
 **Request Body:**
+
 ```json
 {
   "title": "Learn Prisma",
@@ -378,6 +490,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 **Success Response (201):**
+
 ```json
 {
   "message": "Todo created successfully",
@@ -396,9 +509,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ---
 
 #### 5. Get Single Todo
+
 **Endpoint:** `GET /api/todos/:id`
 
 **Success Response (200):**
+
 ```json
 {
   "todo": {
@@ -414,6 +529,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 **Error Response (404):**
+
 ```json
 {
   "error": "Todo not found"
@@ -423,9 +539,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ---
 
 #### 6. Update Todo
+
 **Endpoint:** `PUT /api/todos/:id`
 
 **Request Body (all fields optional):**
+
 ```json
 {
   "title": "Updated title",
@@ -435,6 +553,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "message": "Todo updated successfully",
@@ -453,9 +572,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ---
 
 #### 7. Delete Todo
+
 **Endpoint:** `DELETE /api/todos/:id`
 
 **Success Response (200):**
+
 ```json
 {
   "message": "Todo deleted successfully"
@@ -463,6 +584,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
 **Error Response (404):**
+
 ```json
 {
   "error": "Todo not found"
@@ -499,6 +621,7 @@ app.listen(PORT, () => {
 ```
 
 **Key Concepts:**
+
 - `express()` - Creates Express application
 - `app.json()` - Parses incoming JSON requests
 - `app.use()` - Mounts middleware/routes
@@ -533,6 +656,7 @@ module.exports = pool;
 ```
 
 **Key Concepts:**
+
 - **Connection Pool**: Reuses database connections for better performance
 - **pool.query()**: Executes SQL queries
 - **Environment Variables**: Keeps sensitive data secure
@@ -547,11 +671,11 @@ const jwt = require('jsonwebtoken');
 const authMiddleware = (req, res, next) => {
   // Get token from header
   const token = req.header('Authorization')?.replace('Bearer ', '');
-  
+
   if (!token) {
     return res.status(401).json({ error: 'Access denied' });
   }
-  
+
   try {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -564,6 +688,7 @@ const authMiddleware = (req, res, next) => {
 ```
 
 **Key Concepts:**
+
 - **Middleware**: Functions that execute before route handlers
 - **req.header()**: Extracts headers from request
 - **jwt.verify()**: Validates and decodes JWT token
@@ -581,42 +706,42 @@ const pool = require('../config/database');
 const signup = async (req, res) => {
   try {
     const { email, password, name } = req.body;
-    
+
     // Check if user exists
     const userExists = await pool.query(
       'SELECT * FROM users WHERE email = $1',
       [email]
     );
-    
+
     if (userExists.rows.length > 0) {
       return res.status(400).json({ error: 'User already exists' });
     }
-    
+
     // Hash password
     const hashedPassword = await bcrypt.hash(
       password,
       parseInt(process.env.BCRYPT_ROUNDS)
     );
-    
+
     // Insert user
     const result = await pool.query(
       'INSERT INTO users (email, password, name) VALUES ($1, $2, $3) RETURNING id, email, name',
       [email, hashedPassword, name]
     );
-    
+
     const user = result.rows[0];
-    
+
     // Generate JWT
     const token = jwt.sign(
       { userId: user.id, email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );
-    
+
     res.status(201).json({
       message: 'User created successfully',
       token,
-      user
+      user,
     });
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
@@ -625,6 +750,7 @@ const signup = async (req, res) => {
 ```
 
 **Key Concepts:**
+
 - **async/await**: Handles asynchronous operations
 - **Parameterized Queries ($1, $2)**: Prevents SQL injection
 - **bcrypt.hash()**: One-way password encryption
@@ -643,15 +769,15 @@ const createTodo = async (req, res) => {
   try {
     const { title, description } = req.body;
     const userId = req.user.userId; // From auth middleware
-    
+
     const result = await pool.query(
       'INSERT INTO todos (title, description, user_id) VALUES ($1, $2, $3) RETURNING *',
       [title, description, userId]
     );
-    
+
     res.status(201).json({
       message: 'Todo created successfully',
-      todo: result.rows[0]
+      todo: result.rows[0],
     });
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
@@ -662,12 +788,12 @@ const createTodo = async (req, res) => {
 const getTodos = async (req, res) => {
   try {
     const userId = req.user.userId;
-    
+
     const result = await pool.query(
       'SELECT * FROM todos WHERE user_id = $1 ORDER BY created_at DESC',
       [userId]
     );
-    
+
     res.json({ todos: result.rows });
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
@@ -680,49 +806,49 @@ const updateTodo = async (req, res) => {
     const { id } = req.params;
     const { title, description, completed } = req.body;
     const userId = req.user.userId;
-    
+
     // Build dynamic query based on provided fields
     const updates = [];
     const values = [];
     let paramCount = 1;
-    
+
     if (title !== undefined) {
       updates.push(`title = $${paramCount}`);
       values.push(title);
       paramCount++;
     }
-    
+
     if (description !== undefined) {
       updates.push(`description = $${paramCount}`);
       values.push(description);
       paramCount++;
     }
-    
+
     if (completed !== undefined) {
       updates.push(`completed = $${paramCount}`);
       values.push(completed);
       paramCount++;
     }
-    
+
     updates.push(`updated_at = CURRENT_TIMESTAMP`);
     values.push(id, userId);
-    
+
     const query = `
       UPDATE todos 
       SET ${updates.join(', ')} 
       WHERE id = $${paramCount} AND user_id = $${paramCount + 1}
       RETURNING *
     `;
-    
+
     const result = await pool.query(query, values);
-    
+
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Todo not found' });
     }
-    
+
     res.json({
       message: 'Todo updated successfully',
-      todo: result.rows[0]
+      todo: result.rows[0],
     });
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
@@ -734,16 +860,16 @@ const deleteTodo = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.userId;
-    
+
     const result = await pool.query(
       'DELETE FROM todos WHERE id = $1 AND user_id = $2 RETURNING id',
       [id, userId]
     );
-    
+
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Todo not found' });
     }
-    
+
     res.json({ message: 'Todo deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
@@ -752,6 +878,7 @@ const deleteTodo = async (req, res) => {
 ```
 
 **Key Concepts:**
+
 - **req.user**: Set by auth middleware
 - **req.params**: URL parameters (/todos/:id)
 - **req.body**: JSON request body
@@ -766,14 +893,15 @@ const deleteTodo = async (req, res) => {
 
 REST (Representational State Transfer) uses HTTP methods for CRUD operations:
 
-| HTTP Method | Operation | Example |
-|-------------|-----------|---------|
-| GET | Read | Get todos |
-| POST | Create | Create todo |
-| PUT | Update | Update todo |
-| DELETE | Delete | Delete todo |
+| HTTP Method | Operation | Example     |
+| ----------- | --------- | ----------- |
+| GET         | Read      | Get todos   |
+| POST        | Create    | Create todo |
+| PUT         | Update    | Update todo |
+| DELETE      | Delete    | Delete todo |
 
 **RESTful URL Design:**
+
 ```
 GET    /api/todos       - Collection of resources
 POST   /api/todos       - Create new resource
@@ -787,6 +915,7 @@ DELETE /api/todos/5     - Delete specific resource
 ### 2. **SQL Parameterized Queries**
 
 **❌ Bad (SQL Injection Vulnerable):**
+
 ```javascript
 const email = req.body.email;
 const query = `SELECT * FROM users WHERE email = '${email}'`;
@@ -794,6 +923,7 @@ const query = `SELECT * FROM users WHERE email = '${email}'`;
 ```
 
 **✅ Good (Safe):**
+
 ```javascript
 const query = 'SELECT * FROM users WHERE email = $1';
 const values = [email];
@@ -801,6 +931,7 @@ await pool.query(query, values);
 ```
 
 **How it works:**
+
 - `$1, $2, $3` are placeholders
 - PostgreSQL sanitizes the values
 - Prevents malicious SQL code injection
@@ -822,6 +953,7 @@ const isMatch = await bcrypt.compare(inputPassword, hashedPassword);
 ```
 
 **bcrypt Features:**
+
 - **Salt**: Random data added to password before hashing
 - **Cost Factor**: Number of hash iterations (10 = 2^10 = 1024 iterations)
 - **Slow by Design**: Makes brute-force attacks impractical
@@ -836,6 +968,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoidXNlckBleGFtcGx
 ```
 
 **Header:**
+
 ```json
 {
   "alg": "HS256",
@@ -844,16 +977,18 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoidXNlckBleGFtcGx
 ```
 
 **Payload (Claims):**
+
 ```json
 {
   "userId": 1,
   "email": "user@example.com",
-  "iat": 1639999999,  // Issued at
-  "exp": 1640604799   // Expires at
+  "iat": 1639999999, // Issued at
+  "exp": 1640604799 // Expires at
 }
 ```
 
 **Signature:**
+
 ```
 HMACSHA256(
   base64UrlEncode(header) + "." + base64UrlEncode(payload),
@@ -878,6 +1013,7 @@ Request → Middleware 1 → Middleware 2 → Route Handler → Response
 ```
 
 Each middleware can:
+
 - Modify `req` and `res` objects
 - End the request-response cycle
 - Call `next()` to pass control
@@ -887,12 +1023,14 @@ Each middleware can:
 ### 6. **PostgreSQL Connection Pooling**
 
 **Without Pool (Bad):**
+
 ```javascript
 // Opens new connection for each query
 // Slow and resource-intensive
 ```
 
 **With Pool (Good):**
+
 ```javascript
 // Maintains pool of connections
 // Reuses existing connections
@@ -900,11 +1038,12 @@ Each middleware can:
 ```
 
 **Pool Configuration:**
+
 ```javascript
 const pool = new Pool({
-  max: 20,          // Maximum connections
-  idleTimeoutMillis: 30000,  // Close idle connections
-  connectionTimeoutMillis: 2000  // Timeout if no connection available
+  max: 20, // Maximum connections
+  idleTimeoutMillis: 30000, // Close idle connections
+  connectionTimeoutMillis: 2000, // Timeout if no connection available
 });
 ```
 
@@ -913,6 +1052,7 @@ const pool = new Pool({
 ### 7. **Error Handling Patterns**
 
 **Try-Catch for Async Operations:**
+
 ```javascript
 const createTodo = async (req, res) => {
   try {
@@ -927,6 +1067,7 @@ const createTodo = async (req, res) => {
 ```
 
 **Validation Before Database:**
+
 ```javascript
 if (!title || title.trim() === '') {
   return res.status(400).json({ error: 'Title is required' });
@@ -934,6 +1075,7 @@ if (!title || title.trim() === '') {
 ```
 
 **HTTP Status Codes:**
+
 - `200` - Success
 - `201` - Created
 - `400` - Bad Request (client error)
@@ -946,6 +1088,7 @@ if (!title || title.trim() === '') {
 ## 🧪 Testing with cURL
 
 ### 1. Register New User
+
 ```bash
 curl -X POST http://localhost:3000/api/auth/signup \
   -H "Content-Type: application/json" \
@@ -957,6 +1100,7 @@ curl -X POST http://localhost:3000/api/auth/signup \
 ```
 
 ### 2. Login
+
 ```bash
 curl -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
@@ -969,6 +1113,7 @@ curl -X POST http://localhost:3000/api/auth/login \
 **Save the token from response!**
 
 ### 3. Create Todo (with token)
+
 ```bash
 curl -X POST http://localhost:3000/api/todos \
   -H "Content-Type: application/json" \
@@ -980,12 +1125,14 @@ curl -X POST http://localhost:3000/api/todos \
 ```
 
 ### 4. Get All Todos
+
 ```bash
 curl -X GET http://localhost:3000/api/todos \
   -H "Authorization: Bearer YOUR_TOKEN_HERE"
 ```
 
 ### 5. Update Todo
+
 ```bash
 curl -X PUT http://localhost:3000/api/todos/1 \
   -H "Content-Type: application/json" \
@@ -996,6 +1143,7 @@ curl -X PUT http://localhost:3000/api/todos/1 \
 ```
 
 ### 6. Delete Todo
+
 ```bash
 curl -X DELETE http://localhost:3000/api/todos/1 \
   -H "Authorization: Bearer YOUR_TOKEN_HERE"
@@ -1008,16 +1156,19 @@ curl -X DELETE http://localhost:3000/api/todos/1 \
 ### Issue 1: Database Connection Failed
 
 **Error:**
+
 ```
 Error: connect ECONNREFUSED 127.0.0.1:5432
 ```
 
 **Solutions:**
+
 1. Check if PostgreSQL is running:
+
    ```bash
    # macOS/Linux
    sudo systemctl status postgresql
-   
+
    # macOS with Homebrew
    brew services list
    ```
@@ -1034,15 +1185,19 @@ Error: connect ECONNREFUSED 127.0.0.1:5432
 ### Issue 2: Token Verification Failed
 
 **Error:**
+
 ```json
 { "error": "Invalid token" }
 ```
 
 **Solutions:**
+
 1. Check token format in header:
+
    ```
    Authorization: Bearer eyJhbGciOiJIUzI...
    ```
+
    (Note the space after "Bearer")
 
 2. Ensure token hasn't expired
@@ -1054,12 +1209,14 @@ Error: connect ECONNREFUSED 127.0.0.1:5432
 ### Issue 3: User Already Exists
 
 **Error:**
+
 ```json
 { "error": "User already exists" }
 ```
 
 **Solution:**
 Use different email or delete existing user:
+
 ```sql
 DELETE FROM users WHERE email = 'test@example.com';
 ```
@@ -1069,21 +1226,25 @@ DELETE FROM users WHERE email = 'test@example.com';
 ### Issue 4: Port Already in Use
 
 **Error:**
+
 ```
 Error: listen EADDRINUSE: address already in use :::3000
 ```
 
 **Solutions:**
+
 1. Change port in `.env`:
+
    ```env
    PORT=3001
    ```
 
 2. Or kill process using port 3000:
+
    ```bash
    # Find process
    lsof -i :3000
-   
+
    # Kill process
    kill -9 <PID>
    ```
@@ -1097,6 +1258,7 @@ Congratulations! You've built a complete backend API from scratch. Now:
 1. **Test thoroughly** - Try all API endpoints
 2. **Review the code** - Understand every line
 3. **Experiment** - Add features like:
+
    - Email validation
    - Password strength requirements
    - Pagination for todos
@@ -1115,7 +1277,7 @@ Congratulations! You've built a complete backend API from scratch. Now:
 ✅ bcrypt secures passwords  
 ✅ Middleware chains process requests  
 ✅ Error handling is critical  
-✅ Connection pooling improves performance  
+✅ Connection pooling improves performance
 
 **You now understand the fundamentals of backend development!**
 
