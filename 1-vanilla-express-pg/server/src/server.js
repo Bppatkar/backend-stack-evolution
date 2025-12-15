@@ -18,14 +18,14 @@ app.use(
   cors({
     origin: function (origin, callback) {
       if (!origin) return callback(null, true);
-      
+
       if (allowedOrigins.indexOf(origin) !== -1) {
         callback(null, true);
       } else {
-        const originWithoutSlash = origin.endsWith('/') 
-          ? origin.slice(0, -1) 
+        const originWithoutSlash = origin.endsWith('/')
+          ? origin.slice(0, -1)
           : origin + '/';
-        
+
         if (allowedOrigins.indexOf(originWithoutSlash) !== -1) {
           callback(null, true);
         } else {
@@ -40,6 +40,26 @@ app.use(
 );
 
 app.use(express.json());
+
+// Add this before your routes
+app.get('/api/test-db', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT NOW() as time, version() as version'
+    );
+    res.json({
+      status: 'Database connected',
+      time: result.rows[0].time,
+      version: result.rows[0].version,
+    });
+  } catch (error) {
+    console.error('Database test error:', error);
+    res.status(500).json({
+      error: 'Database connection failed',
+      message: error.message,
+    });
+  }
+});
 
 app.use('/api/auth', authRoutes);
 app.use('/api/todos', todoRoutes);
