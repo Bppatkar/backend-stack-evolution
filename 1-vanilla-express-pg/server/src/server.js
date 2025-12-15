@@ -2,7 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 dotenv.config();
-import './config/database.js';
+// import './config/database.js';
+import pool from './config/database.js';
 import authRoutes from './routes/auth.js';
 import todoRoutes from './routes/todos.js';
 
@@ -41,7 +42,6 @@ app.use(
 
 app.use(express.json());
 
-// Add this before your routes
 app.get('/api/test-db', async (req, res) => {
   try {
     const result = await pool.query(
