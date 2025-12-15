@@ -41,7 +41,7 @@ function TodoForm({ onClose, todo = null }) {
         onClose();
       }
     } catch (error) {
-      console.error('Failed to save todo:', error);
+      // console.error('Failed to save todo:', error);
     } finally {
       setLoading(false);
     }

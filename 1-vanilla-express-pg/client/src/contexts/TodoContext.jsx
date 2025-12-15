@@ -42,7 +42,7 @@ function TodoProvider({ children }) {
         description = String(description || '');
       }
 
-      console.log('Creating todo with:', { title, description });
+      // console.log('Creating todo with:', { title, description });
       const response = await todoAPI.create({ title, description });
       const newTodo = response.data.todo;
       setTodos((prev) => [newTodo, ...prev]);
