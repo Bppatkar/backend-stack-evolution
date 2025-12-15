@@ -21,19 +21,17 @@ function AuthProvider({ children }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setAuthToken(token);
-    }
-  }, []);
+    const initializeAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        setAuthToken(token);
+        await loadUser();
+      } else {
+        setLoading(false);
+      }
+    };
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      loadUser();
-    } else {
-      setLoading(false);
-    }
+    initializeAuth();
   }, []);
 
   const loadUser = useCallback(async () => {
@@ -45,7 +43,6 @@ function AuthProvider({ children }) {
       localStorage.setItem('user', JSON.stringify(response.data.user));
     } catch (error) {
       console.error('Failed to load user: ', error);
-      toast.error('Failed To Load user');
       setError(error.response?.data?.error || 'Failed to load user');
       logout();
     } finally {
@@ -62,7 +59,7 @@ function AuthProvider({ children }) {
       setAuthToken(token);
       setUser(user);
       localStorage.setItem('user', JSON.stringify(user));
-
+      // console.log('login called - will show toast');
       toast.success('Login successful!');
       return { success: true, user };
     } catch (error) {

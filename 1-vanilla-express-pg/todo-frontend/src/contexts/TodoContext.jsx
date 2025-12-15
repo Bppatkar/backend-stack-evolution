@@ -11,7 +11,7 @@ function TodoProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchTodos = useCallback(async () => {
+  const fetchTodos = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -26,7 +26,7 @@ function TodoProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
   const createTodo = async (title, description = '') => {
     try {

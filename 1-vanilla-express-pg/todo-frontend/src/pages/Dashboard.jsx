@@ -13,7 +13,11 @@ const Dashboard = () => {
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
-    fetchTodos();
+    const loadTodos = async () => {
+      await fetchTodos();
+    };
+
+    loadTodos();
   }, []);
 
   if (loading && todos.length === 0) {

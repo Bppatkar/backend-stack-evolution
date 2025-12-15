@@ -24,7 +24,6 @@ const Login = () => {
     if (result.success) {
       navigate(returnUrl);
     }
-    toast.success(result.message);
     setLoading(false);
   };
 
