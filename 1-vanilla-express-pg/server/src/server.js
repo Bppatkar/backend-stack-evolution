@@ -8,9 +8,31 @@ import todoRoutes from './routes/todos.js';
 
 const app = express();
 const PORT = process.env.PORT || 7000;
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://backend-stack-evolution.vercel.app',
+  'https://backend-stack-evolution.vercel.app/',
+];
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        const originWithoutSlash = origin.endsWith('/') 
+          ? origin.slice(0, -1) 
+          : origin + '/';
+        
+        if (allowedOrigins.indexOf(originWithoutSlash) !== -1) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
