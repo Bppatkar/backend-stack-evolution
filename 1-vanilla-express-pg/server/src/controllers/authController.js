@@ -40,7 +40,6 @@ export const signup = async (req, res) => {
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
 
-    delete newUser.password;
 
     res.status(201).json({
       success: true,
@@ -52,6 +51,7 @@ export const signup = async (req, res) => {
     console.error('Signup error:', error);
     res.status(500).json({
       error: 'Server error during registration',
+      details: error.message,
     });
   }
 };
@@ -104,6 +104,7 @@ export const login = async (req, res) => {
     console.error('Login error:', error);
     res.status(500).json({
       error: 'Server error during login',
+      details: error.message,
     });
   }
 };
