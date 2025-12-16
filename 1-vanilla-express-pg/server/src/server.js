@@ -65,15 +65,14 @@ app.get('/api/init-db', async (req, res) => {
     );
     // Create users table
     await pool.query(`
-      CREATE TABLE users (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(100),  -- Added name column
-  username VARCHAR(50) UNIQUE NOT NULL,
-  email VARCHAR(100) UNIQUE NOT NULL,
-  password TEXT NOT NULL,  -- Changed from password_hash to password
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-    `);
+  CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+`);
 
     // Create todos table
     await pool.query(`
