@@ -166,7 +166,7 @@ console.log(user.firstName); // ❌ Error: Property doesn't exist
 │   │   └── 20231206_init/
 │   └── seed.ts                  # Seed data (optional)
 ├── src/
-│   ├── config/
+│   ├── lib/
 │   │   ├── prisma.ts            # Prisma Client singleton
 │   │   └── env.ts               # Environment validation
 │   ├── middleware/

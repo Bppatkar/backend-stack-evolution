@@ -1,0 +1,36 @@
+{
+  "name": "4-prisma-typescript",
+  "version": "1.0.0",
+  "description": "> The Ultimate Stack - End-to-end type safety with Prisma ORM and TypeScript",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "nodemon src/server.ts",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+    "dependencies": {
+    "@prisma/client": "^7.1.0",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "joi": "^17.9.2",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.10.2",
+    "nodemon": "^3.0.1",
+    "prisma": "^7.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}
