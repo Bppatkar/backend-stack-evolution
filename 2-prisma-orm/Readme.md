@@ -94,7 +94,7 @@ model Todo {
 
 - hit cmd - npx prisma migrate dev --name init
 
-- for client instance with prisma 7 version u have to use
+- for client instance with prisma 7 version u have to use in lib/prisma.ts/js
 
 ```bash
 import { PrismaClient } from '../generated/prisma/client.ts';
